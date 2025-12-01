@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run App",
+      "request": "launch",
+      "mainClass": "com.hkhan.app.App",
+      "projectName": "inventory-management-system",
+      "env": {
+        "MYSQL_URL": "jdbc:mysql://127.0.0.1:3306/Inventory?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": ""
+      }
+    }
+  ]
+}
