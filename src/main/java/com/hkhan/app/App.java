@@ -171,6 +171,8 @@ public class App {
             dao.updateItem(updatedItem);
             logger.info("Item successfully updated in database with ID: " + updatedItem.getId());
             System.out.println("Item updated successfully!");
+
+            // Display the list of items again to show the updated item
             for (Item item : dao.getAllItems()) {
                 System.out.println("ID: " + item.getId() + ", Name: " + item.getName() + ", Quantity: "
                         + item.getQuantity() + ", Price: $" + item.getPrice());
@@ -207,6 +209,7 @@ public class App {
             logger.info("Item successfully deleted from database with ID: " + itemId);
             System.out.println("Item deleted successfully!");
 
+            // Display the list of items again to show the item has been deleted
             for (Item item : dao.getAllItems()) {
                 System.out.println("ID: " + item.getId() + ", Name: " + item.getName() + ", Quantity: "
                         + item.getQuantity() + ", Price: $" + item.getPrice());
