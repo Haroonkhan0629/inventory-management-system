@@ -46,7 +46,7 @@ public class App {
             searchItemInDatabase(scanner);
         } else if (input.equals("6")) {
             logger.info("User selected: Generate Report");
-            // Placeholder for generate report
+            generateInventoryReport();
         } else {
             logger.info("User exited the application");
             return;
@@ -130,7 +130,7 @@ public class App {
             }
             logger.info("Successfully retrieved and displayed " + count + " items from database");
             System.out.println("Total items: " + count);
-            
+
             // If there's an error getting the items from the database
             // or if database connection fails
         } catch (SQLException e) {
@@ -262,7 +262,21 @@ public class App {
 
     public static void generateInventoryReport() {
         logger.fine("Starting generateInventoryReport method");
-        // Placeholder for generating inventory report
+
+        // Create a new ItemDAO object to interact with the database
+        ItemDAO dao = new ItemDAO();
+        try {
+            // Call the generateReport() function from ItemDAO.java
+            // This function generates a report of all items in the database
+            // The information is printed from ItemDAO.java because there are multiple return values
+            // and Java doesn't support returning multiple values from a function
+            // Since the function cannot return multiple values for me to use here, I have to print them in that file
+            dao.generateReport();
+            logger.info("Inventory report generated successfully");
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error generating inventory report", e);
+            System.err.println("✗ Error generating report: " + e.getMessage());
+        }
     }
 }
 
@@ -283,7 +297,7 @@ class AppLogger {
                 // Set the log manager variable to get the global log manager
                 LogManager manager = LogManager.getLogManager();
                 // Set root logger as the manager's root logger
-                Logger root = manager.getLogger("");  
+                Logger root = manager.getLogger("");
 
                 // For each existing handler, remove it
                 // This removes the default handlers
@@ -316,7 +330,7 @@ class AppLogger {
                 root.setLevel(Level.ALL);
                 // Set initialized to true so we don't set up logging again
                 initialized = true;
-            // Catch any IO exceptions during setup
+                // Catch any IO exceptions during setup
             } catch (IOException e) {
                 System.err.println("Failed to set up logging: " + e.getMessage());
             }
@@ -334,7 +348,8 @@ class AppLogger {
             public String format(LogRecord r) {
                 // Set class name to just the simple class name of the log record
                 String className = r.getSourceClassName();
-                // If the class name is not null and contains a dot, then extract the simple name
+                // If the class name is not null and contains a dot, then extract the simple
+                // name
                 // the dot means it's a full package name
                 // So if the dot is there, we only want the part after the last dot
                 if (className != null && className.contains(".")) {

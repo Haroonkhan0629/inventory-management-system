@@ -190,5 +190,34 @@ public class ItemDAO {
             stmt.executeUpdate();
         }
     }
+
+    public void generateReport() throws SQLException {
+        // Prepare SQL command to generate a report of total items, total quantity, and total value
+        String sql = "SELECT COUNT(*) as total_items, SUM(quantity) as total_quantity, SUM(price * quantity) as total_value FROM items";
+        
+        // Connect to database and execute the command
+        // The connection closes automatically when done
+        try (Connection conn = getConnection();
+            // stmt is set to open the database connection and execute the SQL query by creating a statement object
+            Statement stmt = conn.createStatement();
+            // rs is set to get the result of the executed query by executing the SQL query and returning a result set object
+            ResultSet rs = stmt.executeQuery(sql)) {
+            
+            // If the executed query found a matching row, then print the report using data from that row
+            // The row that is returned by the query is the only row that contains the total items, total quantity, and total value
+            // because the SQL query returns only one row with the sum of all items, quantities, and values
+            if (rs.next()) {
+                int totalItems = rs.getInt("total_items");
+                int totalQuantity = rs.getInt("total_quantity");
+                double totalValue = rs.getDouble("total_value");
+                // Print the report with the total items, total quantity, and total value
+                System.out.println("\n========== INVENTORY REPORT ==========");
+                System.out.println("Total Items in Inventory: " + totalItems);
+                System.out.println("Total Quantity: " + totalQuantity);
+                System.out.println("Total Inventory Value: $" + String.format("%.2f", totalValue));
+                System.out.println("======================================\n");
+            }
+        }
+    }
 }
 
