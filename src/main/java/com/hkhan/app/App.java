@@ -14,42 +14,56 @@ public class App {
 
     public static void main(String[] args) {
         logger.info("Inventory Management System started");
+        Boolean continueRunning = true;
+        // Main loop to keep showing the menu until user exits
+        while (continueRunning) {
 
-        // Scanner helps us read what the user types
-        Scanner scanner = new Scanner(System.in);
+            // Scanner helps us read what the user types
+            Scanner scanner = new Scanner(System.in);
 
-        // Show the menu options to the user
-        System.out.println("Welcome to the Inventory Management System");
-        System.out.println("------------------------------------------");
-        System.out.println("Please select an operation:");
-        System.out.println(
-                "1. Add Item\n2. View Items\n3. Update Item\n4. Delete Item\n5. Search Item\n6. Generate Report\n7. Exit");
+            // Show the menu options to the user
+            System.out.println("Welcome to the Inventory Management System");
+            System.out.println("------------------------------------------");
+            System.out.println("Please select an operation:");
+            System.out.println(
+                    "1. Add Item\n2. View Items\n3. Update Item\n4. Delete Item\n5. Search Item\n6. Generate Report\n7. Exit");
 
-        // Read user's menu choice
-        String input = scanner.nextLine();
+            // Read user's menu choice
+            String input = scanner.nextLine();
 
-        // Conditionals for each menu option
-        if (input.equals("1")) {
-            logger.info("User selected: Add Item");
-            addItemToDatabase(scanner);
-        } else if (input.equals("2")) {
-            logger.info("User selected: View Items");
-            viewItemsFromDatabase();
-        } else if (input.equals("3")) {
-            logger.info("User selected: Update Item");
-            updateItemInDatabase(scanner);
-        } else if (input.equals("4")) {
-            logger.info("User selected: Delete Item");
-            deleteItemFromDatabase(scanner);
-        } else if (input.equals("5")) {
-            logger.info("User selected: Search Item");
-            searchItemInDatabase(scanner);
-        } else if (input.equals("6")) {
-            logger.info("User selected: Generate Report");
-            generateInventoryReport();
-        } else {
-            logger.info("User exited the application");
-            return;
+            // Conditionals for each menu option
+            if (input.equals("1")) {
+                logger.info("User selected: Add Item");
+                addItemToDatabase(scanner);
+            } else if (input.equals("2")) {
+                logger.info("User selected: View Items");
+                viewItemsFromDatabase();
+            } else if (input.equals("3")) {
+                logger.info("User selected: Update Item");
+                updateItemInDatabase(scanner);
+            } else if (input.equals("4")) {
+                logger.info("User selected: Delete Item");
+                deleteItemFromDatabase(scanner);
+            } else if (input.equals("5")) {
+                logger.info("User selected: Search Item");
+                searchItemInDatabase(scanner);
+            } else if (input.equals("6")) {
+                logger.info("User selected: Generate Report");
+                generateInventoryReport();
+            } else {
+                logger.info("User exited the application");
+                return;
+            }
+            // Ask user if they want to continue using the application
+            System.out.println("\nContinue? (y or n)");
+            String answer = scanner.nextLine();
+            if (answer.equals("y")) {
+                continueRunning = true;
+            } else {
+                continueRunning = false;
+                logger.info("Inventory Management System exited by user");
+                System.out.println("Goodbye!");
+            }
         }
     }
 
@@ -268,9 +282,11 @@ public class App {
         try {
             // Call the generateReport() function from ItemDAO.java
             // This function generates a report of all items in the database
-            // The information is printed from ItemDAO.java because there are multiple return values
+            // The information is printed from ItemDAO.java because there are multiple
+            // return values
             // and Java doesn't support returning multiple values from a function
-            // Since the function cannot return multiple values for me to use here, I have to print them in that file
+            // Since the function cannot return multiple values for me to use here, I have
+            // to print them in that file
             dao.generateReport();
             logger.info("Inventory report generated successfully");
         } catch (SQLException e) {
