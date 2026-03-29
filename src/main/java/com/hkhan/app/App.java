@@ -1,9 +1,12 @@
 package com.hkhan.app;
 
+import java.awt.GraphicsEnvironment;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.logging.*;
 import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 import com.hkhan.app.dao.ItemDAO;
 import com.hkhan.app.model.Item;
@@ -14,6 +17,64 @@ public class App {
 
     public static void main(String[] args) {
         logger.info("Inventory Management System started");
+
+        // If someone runs the app with a start option, follow that option.
+        // --gui means "open the window version"
+        // --cli means "open the text menu version"
+        if (args != null && args.length > 0) {
+            String firstArg = args[0].trim().toLowerCase();
+            if (firstArg.equals("--gui")) {
+                // Some environments (like certain servers) cannot show windows.
+                if (GraphicsEnvironment.isHeadless()) {
+                    System.out.println("GUI mode is not available in this environment.");
+                    return;
+                }
+                InventoryGUI.launch();
+                return;
+            }
+            if (firstArg.equals("--cli")) {
+                runCliMode();
+                return;
+            }
+        }
+
+        // If this machine cannot show windows, start the text menu automatically.
+        if (GraphicsEnvironment.isHeadless()) {
+            runCliMode();
+            return;
+        }
+
+        // If windows are available, show a simple "GUI or CLI" choice box.
+        // This appears when you press Play and gives both options.
+        Object[] options = { "Start GUI", "Start CLI", "Cancel" };
+        int startupChoice = JOptionPane.showOptionDialog(
+                null,
+                "How would you like to start the Inventory Management System?",
+                "Choose Startup Mode",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+
+        // Button 1: open the window interface.
+        if (startupChoice == 0) {
+            InventoryGUI.launch();
+            return;
+        }
+
+        // Button 2: open the text menu interface.
+        if (startupChoice == 1) {
+            runCliMode();
+            return;
+        }
+
+        // If Cancel is pressed, simply stop here.
+        logger.info("Application launch canceled by user");
+    }
+
+    // Runs the original text menu version of the app.
+    private static void runCliMode() {
         Boolean continueRunning = true;
         // Main loop to keep showing the menu until user exits
         while (continueRunning) {
@@ -111,8 +172,6 @@ public class App {
             System.err.println("  Make sure MySQL is running and environment variables are set:");
             System.err.println("  MYSQL_URL, MYSQL_USER, MYSQL_PASSWORD");
             // IllegalStateException for missing configuration
-            // Note: This is the issue when MYSQL_URL, MYSQL_USER, or MYSQL_PASSWORD is not
-            // set, which is what I was having trouble with
         } catch (IllegalStateException e) {
             logger.log(Level.SEVERE, "Configuration error: Missing environment variables", e);
             System.err.println("✗ " + e.getMessage());
