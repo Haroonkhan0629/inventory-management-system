@@ -2,6 +2,13 @@
 
 A Java-based inventory management application with both GUI and CLI modes, backed by a MySQL database. The system supports adding, viewing, updating, deleting, and searching inventory items, plus generating a summary report.
 
+## Screenshots
+
+> Add screenshots to a `screenshots/` folder in this repo, then update the paths below.
+
+![GUI interface](screenshots/gui.png)
+![CLI interface](screenshots/cli.png)
+
 ## Tools and Technologies Used
 
 - **Java 21** — the programming language the application is written in
