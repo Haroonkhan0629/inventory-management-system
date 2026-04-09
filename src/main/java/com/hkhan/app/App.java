@@ -1,9 +1,12 @@
 package com.hkhan.app;
 
+import java.awt.GraphicsEnvironment;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.logging.*;
 import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 import com.hkhan.app.dao.ItemDAO;
 import com.hkhan.app.model.Item;
@@ -15,41 +18,113 @@ public class App {
     public static void main(String[] args) {
         logger.info("Inventory Management System started");
 
-        // Scanner helps us read what the user types
-        Scanner scanner = new Scanner(System.in);
+        // If someone runs the app with a start option, follow that option.
+        // --gui means "open the window version"
+        // --cli means "open the text menu version"
+        if (args != null && args.length > 0) {
+            String firstArg = args[0].trim().toLowerCase();
+            if (firstArg.equals("--gui")) {
+                // Some environments (like certain servers) cannot show windows.
+                if (GraphicsEnvironment.isHeadless()) {
+                    System.out.println("GUI mode is not available in this environment.");
+                    return;
+                }
+                InventoryGUI.launch();
+                return;
+            }
+            if (firstArg.equals("--cli")) {
+                runCliMode();
+                return;
+            }
+        }
 
-        // Show the menu options to the user
-        System.out.println("Welcome to the Inventory Management System");
-        System.out.println("------------------------------------------");
-        System.out.println("Please select an operation:");
-        System.out.println(
-                "1. Add Item\n2. View Items\n3. Update Item\n4. Delete Item\n5. Search Item\n6. Generate Report\n7. Exit");
-
-        // Read user's menu choice
-        String input = scanner.nextLine();
-
-        // Conditionals for each menu option
-        if (input.equals("1")) {
-            logger.info("User selected: Add Item");
-            addItemToDatabase(scanner);
-        } else if (input.equals("2")) {
-            logger.info("User selected: View Items");
-            viewItemsFromDatabase();
-        } else if (input.equals("3")) {
-            logger.info("User selected: Update Item");
-            updateItemInDatabase(scanner);
-        } else if (input.equals("4")) {
-            logger.info("User selected: Delete Item");
-            deleteItemFromDatabase(scanner);
-        } else if (input.equals("5")) {
-            logger.info("User selected: Search Item");
-            searchItemInDatabase(scanner);
-        } else if (input.equals("6")) {
-            logger.info("User selected: Generate Report");
-            // Placeholder for generate report
-        } else {
-            logger.info("User exited the application");
+        // If this machine cannot show windows, start the text menu automatically.
+        if (GraphicsEnvironment.isHeadless()) {
+            runCliMode();
             return;
+        }
+
+        // If windows are available, show a simple "GUI or CLI" choice box.
+        // This appears when you press Play and gives both options.
+        Object[] options = { "Start GUI", "Start CLI", "Cancel" };
+        int startupChoice = JOptionPane.showOptionDialog(
+                null,
+                "How would you like to start the Inventory Management System?",
+                "Choose Startup Mode",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+
+        // Button 1: open the window interface.
+        if (startupChoice == 0) {
+            InventoryGUI.launch();
+            return;
+        }
+
+        // Button 2: open the text menu interface.
+        if (startupChoice == 1) {
+            runCliMode();
+            return;
+        }
+
+        // If Cancel is pressed, simply stop here.
+        logger.info("Application launch canceled by user");
+    }
+
+    // Runs the original text menu version of the app.
+    private static void runCliMode() {
+        Boolean continueRunning = true;
+        // Main loop to keep showing the menu until user exits
+        while (continueRunning) {
+
+            // Scanner helps us read what the user types
+            Scanner scanner = new Scanner(System.in);
+
+            // Show the menu options to the user
+            System.out.println("Welcome to the Inventory Management System");
+            System.out.println("------------------------------------------");
+            System.out.println("Please select an operation:");
+            System.out.println(
+                    "1. Add Item\n2. View Items\n3. Update Item\n4. Delete Item\n5. Search Item\n6. Generate Report\n7. Exit");
+
+            // Read user's menu choice
+            String input = scanner.nextLine();
+
+            // Conditionals for each menu option
+            if (input.equals("1")) {
+                logger.info("User selected: Add Item");
+                addItemToDatabase(scanner);
+            } else if (input.equals("2")) {
+                logger.info("User selected: View Items");
+                viewItemsFromDatabase();
+            } else if (input.equals("3")) {
+                logger.info("User selected: Update Item");
+                updateItemInDatabase(scanner);
+            } else if (input.equals("4")) {
+                logger.info("User selected: Delete Item");
+                deleteItemFromDatabase(scanner);
+            } else if (input.equals("5")) {
+                logger.info("User selected: Search Item");
+                searchItemInDatabase(scanner);
+            } else if (input.equals("6")) {
+                logger.info("User selected: Generate Report");
+                generateInventoryReport();
+            } else {
+                logger.info("User exited the application");
+                return;
+            }
+            // Ask user if they want to continue using the application
+            System.out.println("\nContinue? (y or n)");
+            String answer = scanner.nextLine();
+            if (answer.equals("y")) {
+                continueRunning = true;
+            } else {
+                continueRunning = false;
+                logger.info("Inventory Management System exited by user");
+                System.out.println("Goodbye!");
+            }
         }
     }
 
@@ -97,8 +172,6 @@ public class App {
             System.err.println("  Make sure MySQL is running and environment variables are set:");
             System.err.println("  MYSQL_URL, MYSQL_USER, MYSQL_PASSWORD");
             // IllegalStateException for missing configuration
-            // Note: This is the issue when MYSQL_URL, MYSQL_USER, or MYSQL_PASSWORD is not
-            // set, which is what I was having trouble with
         } catch (IllegalStateException e) {
             logger.log(Level.SEVERE, "Configuration error: Missing environment variables", e);
             System.err.println("✗ " + e.getMessage());
@@ -130,7 +203,7 @@ public class App {
             }
             logger.info("Successfully retrieved and displayed " + count + " items from database");
             System.out.println("Total items: " + count);
-            
+
             // If there's an error getting the items from the database
             // or if database connection fails
         } catch (SQLException e) {
@@ -262,7 +335,23 @@ public class App {
 
     public static void generateInventoryReport() {
         logger.fine("Starting generateInventoryReport method");
-        // Placeholder for generating inventory report
+
+        // Create a new ItemDAO object to interact with the database
+        ItemDAO dao = new ItemDAO();
+        try {
+            // Call the generateReport() function from ItemDAO.java
+            // This function generates a report of all items in the database
+            // The information is printed from ItemDAO.java because there are multiple
+            // return values
+            // and Java doesn't support returning multiple values from a function
+            // Since the function cannot return multiple values for me to use here, I have
+            // to print them in that file
+            dao.generateReport();
+            logger.info("Inventory report generated successfully");
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error generating inventory report", e);
+            System.err.println("✗ Error generating report: " + e.getMessage());
+        }
     }
 }
 
@@ -283,7 +372,7 @@ class AppLogger {
                 // Set the log manager variable to get the global log manager
                 LogManager manager = LogManager.getLogManager();
                 // Set root logger as the manager's root logger
-                Logger root = manager.getLogger("");  
+                Logger root = manager.getLogger("");
 
                 // For each existing handler, remove it
                 // This removes the default handlers
@@ -316,7 +405,7 @@ class AppLogger {
                 root.setLevel(Level.ALL);
                 // Set initialized to true so we don't set up logging again
                 initialized = true;
-            // Catch any IO exceptions during setup
+                // Catch any IO exceptions during setup
             } catch (IOException e) {
                 System.err.println("Failed to set up logging: " + e.getMessage());
             }
@@ -334,7 +423,8 @@ class AppLogger {
             public String format(LogRecord r) {
                 // Set class name to just the simple class name of the log record
                 String className = r.getSourceClassName();
-                // If the class name is not null and contains a dot, then extract the simple name
+                // If the class name is not null and contains a dot, then extract the simple
+                // name
                 // the dot means it's a full package name
                 // So if the dot is there, we only want the part after the last dot
                 if (className != null && className.contains(".")) {
