@@ -30,6 +30,19 @@ A Java-based inventory management application with both GUI and CLI modes, backe
 - Database credentials are set via environment variables — never hardcoded in the source code
 - Automated unit tests to verify core functionality
 
+## How It Works
+
+The app has two interface implementations that serve the same core functionality — managing inventory items in a MySQL database. Which one runs depends on the argument passed at startup.
+
+| | GUI Mode | CLI Mode |
+|---|---|---|
+| **Interface file** | `InventoryGUI.java` | `App.java` |
+| **How it looks** | A desktop window with buttons and a table | A numbered text menu in the terminal |
+| **How to launch** | `--gui` argument | `--cli` argument |
+| **Best for** | General use on a desktop machine | Headless or remote environments |
+
+Both modes connect to the same MySQL database through `ItemDAO.java`, which handles all data operations. `App.java` acts as the entry point — it reads the startup argument and launches the appropriate interface.
+
 ## Prerequisites
 
 Install the following before running the project:
