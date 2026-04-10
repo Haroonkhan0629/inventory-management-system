@@ -391,7 +391,7 @@ public class InventoryGUI extends JFrame {
         try {
             // Create DAO object.
             ItemDAO dao = new ItemDAO();
-            // Generate report in console output (same as old structure).
+            // Generate report in console output.
             dao.generateReport();
             // Let user know report was created.
             showInfo("Report generated. Check the console output for full details.");

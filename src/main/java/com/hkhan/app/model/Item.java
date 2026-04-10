@@ -1,7 +1,5 @@
 package com.hkhan.app.model;
 
-import java.util.Objects;
-
 // Create model and constructors for item data
 public class Item {
     private int id;
