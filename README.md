@@ -4,8 +4,6 @@ A Java-based inventory management application with both GUI and CLI modes, backe
 
 ## Screenshots
 
-> Add screenshots to a `screenshots/` folder in this repo, then update the paths below.
-
 ![GUI interface](screenshots/gui.png)
 ![CLI interface](screenshots/cli.png)
 
